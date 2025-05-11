@@ -3,22 +3,22 @@ version: '3.8'
 services:
   main-db:
     env_file:
-      - scraper/config/.env.local
+      - db/config/.env.main.local
     image: postgres:latest
     ports:
       - "5432:5432"
     volumes:
-      - ./db-init:/docker-entrypoint-initdb.d
+      - ./db/db-main-init:/docker-entrypoint-initdb.d
       - main_pgdata:/var/lib/postgresql/data
 
   analysis-db:
     env_file:
-      - analysis_service/config/.env.local
+      - db/config/.env.analysis.local
     image: postgres:latest
     ports:
       - "5433:5432"
     volumes:
-      - ./db-analysis-init:/docker-entrypoint-initdb.d
+      - ./db/db-analysis-init:/docker-entrypoint-initdb.d
       - analysis_pgdata:/var/lib/postgresql/data
 
   scraper:

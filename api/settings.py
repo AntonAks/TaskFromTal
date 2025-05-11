@@ -9,7 +9,7 @@ config = {
 }
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):  # type: ignore[misc]
     # db settings
     db_user: str | None = config.get("POSTGRES_USER")
     db_password: str | None = config.get("POSTGRES_PASSWORD")

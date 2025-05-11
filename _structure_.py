@@ -1,6 +1,9 @@
 import os
 
-def generate_tree(path, level=0, exclude_dirs=None):
+
+def generate_tree(
+    path: str, level: int = 0, exclude_dirs: list["str"] | None = None
+) -> str:
     if exclude_dirs is None:
         exclude_dirs = []
 
@@ -18,10 +21,21 @@ def generate_tree(path, level=0, exclude_dirs=None):
         pass
     return tree
 
-def print_project_structure(root_dir, exclude_dirs=None):
+
+def print_project_structure(
+    root_dir: str, exclude_dirs: list[str] | None = None
+) -> None:
     structure = generate_tree(root_dir, exclude_dirs=exclude_dirs)
     print(f"{root_dir}\n{structure}")
 
-if __name__ == '__main__':
-    exclude_dirs = ['.venv', '.idea', '.git', '__pycache__', '.terraform', 'lambda_packages']
+
+if __name__ == "__main__":
+    exclude_dirs = [
+        ".venv",
+        ".idea",
+        ".git",
+        "__pycache__",
+        ".terraform",
+        "lambda_packages",
+    ]
     print_project_structure(os.getcwd(), exclude_dirs=exclude_dirs)

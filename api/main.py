@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, APIRouter, Request
+from fastapi import FastAPI, APIRouter
 from routers.study import router as study_router
 
 app = FastAPI(title="Scraper API", version="1.0.0")
@@ -7,8 +7,10 @@ api_router = APIRouter()
 
 api_router.include_router(study_router)
 
-app.include_router(api_router, prefix="/api",)
-
+app.include_router(
+    api_router,
+    prefix="/api",
+)
 
 
 if __name__ == "__main__":

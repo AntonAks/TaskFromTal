@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 
-class StudyBase(BaseModel):
+class StudyBase(BaseModel):  # type: ignore[misc]
     title: Optional[str] = None
     organization_name: Optional[str] = None
     organization_type: Optional[str] = None

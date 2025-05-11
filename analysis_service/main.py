@@ -9,16 +9,16 @@ from tasks import data_sync_task
 
 
 # ======= Background async task ========
-async def background_worker():
+async def background_worker() -> None:
     while True:
         print("Background task started!")
         await data_sync_task()
         print("Background task finished.")
-        await asyncio.sleep(900)
+        await asyncio.sleep(60)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+@asynccontextmanager  # type: ignore[arg-type]
+async def lifespan(app: FastAPI) -> None:  # type: ignore[misc]
     bg_task = asyncio.create_task(background_worker())
     yield
     bg_task.cancel()
@@ -31,8 +31,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
+@app.get("/", response_class=HTMLResponse)  # type: ignore[misc]
+async def root(request: Request) -> HTMLResponse:
     top_n = int(request.query_params.get("top", 10))
     content = SimpleCharts.get_chars(top_n)
     return HTMLResponse(content=content)
