@@ -11,9 +11,9 @@ config = {
 
 class Settings(BaseSettings):  # type: ignore[misc]
     # analysis db settings
-    analysis_db_user: str | None = config.get("POSTGRES_USER")
-    analysis_db_password: str | None = config.get("POSTGRES_PASSWORD")
-    analysis_db_name: str | None = config.get("POSTGRES_DB")
+    analysis_db_user: str | None = config.get("ANALYSIS_POSTGRES_USER")
+    analysis_db_password: str | None = config.get("ANALYSIS_POSTGRES_PASSWORD")
+    analysis_db_name: str | None = config.get("ANALYSIS_POSTGRES_DB")
 
     # main db settings
     main_db_user: str | None = config.get("MAIN_POSTGRES_USER")

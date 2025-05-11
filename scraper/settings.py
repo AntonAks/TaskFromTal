@@ -11,9 +11,9 @@ config = {
 
 class Settings(BaseSettings):  # type: ignore[misc]
     # db settings
-    db_user: str | None = config.get("POSTGRES_USER")
-    db_password: str | None = config.get("POSTGRES_PASSWORD")
-    db_name: str | None = config.get("POSTGRES_DB")
+    db_user: str | None = config.get("MAIN_POSTGRES_USER")
+    db_password: str | None = config.get("MAIN_POSTGRES_PASSWORD")
+    db_name: str | None = config.get("MAIN_POSTGRES_DB")
 
     DATABASE_URL: str = f"postgresql://{db_user}:{db_password}@main-db:5432/{db_name}"
     model_config = SettingsConfigDict()

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  main-db:
+    image: postgres:latest
+    env_file: ./.env.prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/db-main-init:/docker-entrypoint-initdb.d
+      - main_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  analysis-db:
+    image: postgres:latest
+    env_file: ./.env.prod
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/db-analysis-init:/docker-entrypoint-initdb.d
+      - analysis_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  scraper:
+    build: scraper/
+    env_file: ./.env.prod
+    depends_on:
+      - main-db
+    restart: unless-stopped
+
+  api:
+    build: api/
+    env_file: ./.env.prod
+    depends_on:
+      - main-db
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+
+  analysis-service:
+    build: analysis_service/
+    env_file: ./.env.prod
+    depends_on:
+      - main-db
+      - analysis-db
+    ports:
+      - "8887:8887"
+    restart: unless-stopped
+
+volumes:
+  main_pgdata:
+  analysis_pgdata:

@@ -1,3 +1,7 @@
+CREATE DATABASE main_db;
+
+\c main_db;
+
 CREATE TABLE IF NOT EXISTS studies (
     id TEXT PRIMARY KEY,
     title TEXT,

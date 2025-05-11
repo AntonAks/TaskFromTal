@@ -4,7 +4,7 @@ COPY . /analysis_service
 
 ENV PYTHONUNBUFFERED=1
 
-RUN pip install --no-cache-dir -r requirements.txt.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8887
 
