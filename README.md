@@ -39,8 +39,11 @@ The platform uses two PostgreSQL databases:
    make setup-local-env
    ```
    This will install requirements and set up pre-commit hooks.
-
-3. Configure environment variables:
+3. Activate the virtual environment:
+   ```bash
+   source .venv/bin/activate
+   ```
+4. Configure environment variables:
    - By default `.env.local` will be used during build and run of application
 
 ### Starting the Platform

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   main-db:
     image: postgres:latest
@@ -10,6 +9,11 @@ services:
       - ./db/db-main-init:/docker-entrypoint-initdb.d
       - main_pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   analysis-db:
     image: postgres:latest
@@ -20,19 +24,26 @@ services:
       - ./db/db-analysis-init:/docker-entrypoint-initdb.d
       - analysis_pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   scraper:
     build: scraper/
     env_file: ./.env.local
     depends_on:
-      - main-db
+      main-db:
+        condition: service_healthy
     restart: unless-stopped
 
   api:
     build: api/
     env_file: ./.env.local
     depends_on:
-      - main-db
+      main-db:
+        condition: service_healthy
     ports:
       - "8888:8888"
     restart: unless-stopped
@@ -41,8 +52,10 @@ services:
     build: analysis_service/
     env_file: ./.env.local
     depends_on:
-      - main-db
-      - analysis-db
+      main-db:
+        condition: service_healthy
+      analysis-db:
+        condition: service_healthy
     ports:
       - "8887:8887"
     restart: unless-stopped

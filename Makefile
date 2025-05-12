@@ -1,7 +1,9 @@
 .PHONY: install-pre-commit run-pre-commit
 
 setup-local-env:
-	pip install -r requirements.txt
+	python3 -m virtualenv .venv && \
+	. .venv/bin/activate && \
+	pip install -r requirements.txt && \
 	pre-commit install
 
 run-pre-commit:
