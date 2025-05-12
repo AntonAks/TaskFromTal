@@ -17,3 +17,14 @@ repos:
     rev: v1.9.0
     hooks:
       - id: mypy
+
+  - repo: local
+    hooks:
+    -   id: pytest
+        name: pytest
+        entry: env TESTING=true pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        stages: [commit]

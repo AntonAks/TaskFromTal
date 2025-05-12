@@ -8,14 +8,32 @@ config = {
     **os.environ,  # override loaded values with environment variables
 }
 
+TESTING = os.environ.get("TESTING", "").lower() == "true"
+
 
 class Settings(BaseSettings):  # type: ignore[misc]
-    # db settings
-    db_user: str | None = config.get("MAIN_POSTGRES_USER")
-    db_password: str | None = config.get("MAIN_POSTGRES_USER")
-    db_name: str | None = config.get("MAIN_POSTGRES_USER")
+    # main db settings
+    main_db_user: str | None = config.get("MAIN_POSTGRES_USER")
+    main_db_password: str | None = config.get("MAIN_POSTGRES_PASSWORD")
+    main_db_name: str | None = config.get("MAIN_POSTGRES_DB")
 
-    DATABASE_URL: str = f"postgresql://{db_user}:{db_password}@main-db:5432/{db_name}"
+    # analysis db settings
+    analysis_db_user: str | None = config.get("ANALYSIS_POSTGRES_USER")
+    analysis_db_password: str | None = config.get("ANALYSIS_POSTGRES_PASSWORD")
+    analysis_db_name: str | None = config.get("ANALYSIS_POSTGRES_DB")
+
+    MAIN_DATABASE_URL: str = (
+        "sqlite:///test_db/test.db"
+        if TESTING
+        else f"postgresql://{main_db_user}:{main_db_password}@main-db:5432/{main_db_name}"
+    )
+
+    ANALYSIS_DATABASE_URL: str = (
+        "sqlite:///test_db/test.db"
+        if TESTING
+        else f"postgresql://{analysis_db_user}:{analysis_db_password}@analysis-db:5432/{analysis_db_name}"
+    )
+
     model_config = SettingsConfigDict()
 
 

@@ -76,8 +76,7 @@ async def update_study(
             status_code=status.HTTP_404_NOT_FOUND, detail="Study not found"
         )
 
-    update_data = study_data.dict(exclude_unset=True)
-
+    update_data = study_data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(study, key, value)
 

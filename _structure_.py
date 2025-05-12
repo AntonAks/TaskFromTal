@@ -37,5 +37,6 @@ if __name__ == "__main__":
         "__pycache__",
         ".terraform",
         "lambda_packages",
+        ".mypy_cache",
     ]
     print_project_structure(os.getcwd(), exclude_dirs=exclude_dirs)

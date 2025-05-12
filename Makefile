@@ -7,19 +7,16 @@ setup-local-env:
 run-pre-commit:
 	pre-commit run --all-files
 
+start:
+	docker-compose -f docker-compose.yaml  up --build
+	docker-compose up
 
 
 restart:
 	docker-compose down
-	docker-compose build
+	docker-compose -f docker-compose.yaml  up --build
 	docker-compose up
 
-run:
-	docker-compose stop
-	docker-compose up
 
-stop:
-	docker-compose stop
-
-down:
-	docker-compose down
+start-prod:
+	docker-compose -f docker-compose-prod.yaml  up --build
