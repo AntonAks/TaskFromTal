@@ -70,18 +70,16 @@ This uses the `docker-compose-prod.yaml` configuration with production settings 
 ## API Documentation
 
 Once the API service is running, you can access the API documentation at:
-```
 http://localhost:8888/docs
-```
+
 This provides an interactive Swagger UI to explore and test the API endpoints.
 
 ## API Analysis dashboards
 
 Once the all services are running, you can access the Analysis dashboards:
 **After the first start you need to wait for 60 seconds before data on Analysis service will be processed**
-```
-http://localhost:8887/docs
-```
+http://localhost:8887
+
 
 ## Testing
 

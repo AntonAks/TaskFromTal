@@ -64,4 +64,4 @@ class CollectStudiesTask:
 
             print(f"{len(bulk)} records were stored.")
             print(f"Task {cls.__name__} finished!")
-            await asyncio.sleep(60)
+            await asyncio.sleep(120)
