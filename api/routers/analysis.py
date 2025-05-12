@@ -32,7 +32,7 @@ async def get_studies_by_org(
     if sort_order:
         if sort_order == "desc":
             query = query.order_by(OrganizationStatistics.quantity.desc())
-        else:  # asc
+        else:
             query = query.order_by(OrganizationStatistics.quantity.asc())
 
     studies_by_org: list[OrganizationStatistics] = query.offset(skip).limit(limit).all()

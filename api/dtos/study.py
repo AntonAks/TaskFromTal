@@ -2,21 +2,21 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
-class StudyBase(BaseModel):  # type: ignore[misc]
+class StudyBaseDTO(BaseModel):  # type: ignore[misc]
     title: str | None = None
     organization_name: str | None = None
     organization_type: str | None = None
 
 
-class StudyCreate(StudyBase):
+class StudyCreateDTO(StudyBaseDTO):
     pass
 
 
-class StudyUpdate(StudyBase):
+class StudyUpdateDTO(StudyBaseDTO):
     pass
 
 
-class StudyResponse(StudyBase):
+class StudyResponseDTO(StudyBaseDTO):
     id: str
     created_at: datetime
     updated_at: datetime

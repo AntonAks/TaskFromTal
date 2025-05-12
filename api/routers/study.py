@@ -6,7 +6,7 @@ import uuid
 
 from db.db import get_db
 from db.models import Study
-from dtos.study import StudyCreate, StudyUpdate, StudyResponse
+from dtos.study import StudyCreateDTO, StudyUpdateDTO, StudyResponseDTO
 
 router = APIRouter(
     prefix="/studies",
@@ -14,8 +14,10 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=StudyResponse, status_code=status.HTTP_201_CREATED)  # type: ignore[misc]
-async def create_study(study_data: StudyCreate, db: Session = Depends(get_db)) -> Study:
+@router.post("/", response_model=StudyResponseDTO, status_code=status.HTTP_201_CREATED)  # type: ignore[misc]
+async def create_study(
+    study_data: StudyCreateDTO, db: Session = Depends(get_db)
+) -> Study:
     new_study = Study(
         id=str(uuid.uuid4()),
         title=study_data.title,
@@ -32,7 +34,7 @@ async def create_study(study_data: StudyCreate, db: Session = Depends(get_db)) -
     return new_study
 
 
-@router.get("/", response_model=List[StudyResponse])  # type: ignore[misc]
+@router.get("/", response_model=List[StudyResponseDTO])  # type: ignore[misc]
 async def get_studies(
     skip: int = 0,
     limit: int = 100,
@@ -53,7 +55,7 @@ async def get_studies(
     return studies
 
 
-@router.get("/{study_id}", response_model=StudyResponse)  # type: ignore[misc]
+@router.get("/{study_id}", response_model=StudyResponseDTO)  # type: ignore[misc]
 async def get_study(study_id: str, db: Session = Depends(get_db)) -> Study:
     study = db.query(Study).filter(Study.id == study_id).first()
 
@@ -65,9 +67,9 @@ async def get_study(study_id: str, db: Session = Depends(get_db)) -> Study:
     return study
 
 
-@router.put("/{study_id}", response_model=StudyResponse)  # type: ignore[misc]
+@router.put("/{study_id}", response_model=StudyResponseDTO)  # type: ignore[misc]
 async def update_study(
-    study_id: str, study_data: StudyUpdate, db: Session = Depends(get_db)
+    study_id: str, study_data: StudyUpdateDTO, db: Session = Depends(get_db)
 ) -> Study:
     study = db.query(Study).filter(Study.id == study_id).first()
 
