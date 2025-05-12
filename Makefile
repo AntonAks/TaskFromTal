@@ -1,7 +1,7 @@
 .PHONY: install-pre-commit run-pre-commit
 
 setup-local-env:
-	pip install pre-commit
+	pip install -r requirements.txt
 	pre-commit install
 
 run-pre-commit:
