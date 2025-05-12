@@ -65,7 +65,7 @@ To start the platform in production mode:
 ```bash
 make start-prod
 ```
-This uses the `docker-compose-prod.yaml` configuration with production settings from `.env.local`.
+This uses the `docker-compose-prod.yaml` configuration with production settings from `.env.prod`.
 
 ## API Documentation
 
