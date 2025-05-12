@@ -76,9 +76,9 @@ This provides an interactive Swagger UI to explore and test the API endpoints.
 
 ## API Analysis dashboards
 
-Once the all services are running, you can access the Analysis dashboards:
+Once the all services are running, you can access the Analysis dashboards:http://localhost:8887
 **After the first start you need to wait for 60 seconds before data on Analysis service will be processed**
-http://localhost:8887
+
 
 
 ## Testing
