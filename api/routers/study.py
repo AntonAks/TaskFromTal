@@ -5,8 +5,9 @@ from datetime import datetime
 import uuid
 
 from db.db import get_db
-from db.models import Study
+from db.models import Study, User
 from dtos.study import StudyCreateDTO, StudyUpdateDTO, StudyResponseDTO
+from utils.security import get_current_active_user, get_current_admin_user
 
 router = APIRouter(
     prefix="/studies",
@@ -16,7 +17,9 @@ router = APIRouter(
 
 @router.post("/", response_model=StudyResponseDTO, status_code=status.HTTP_201_CREATED)  # type: ignore[misc]
 async def create_study(
-    study_data: StudyCreateDTO, db: Session = Depends(get_db)
+    study_data: StudyCreateDTO,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ) -> Study:
     new_study = Study(
         id=str(uuid.uuid4()),
@@ -41,6 +44,7 @@ async def get_studies(
     title: Optional[str] = None,
     organization_name: Optional[str] = None,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ) -> list[Study]:
     query = db.query(Study)
 
@@ -56,7 +60,11 @@ async def get_studies(
 
 
 @router.get("/{study_id}", response_model=StudyResponseDTO)  # type: ignore[misc]
-async def get_study(study_id: str, db: Session = Depends(get_db)) -> Study:
+async def get_study(
+    study_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Study:
     study = db.query(Study).filter(Study.id == study_id).first()
 
     if study is None:
@@ -69,7 +77,10 @@ async def get_study(study_id: str, db: Session = Depends(get_db)) -> Study:
 
 @router.put("/{study_id}", response_model=StudyResponseDTO)  # type: ignore[misc]
 async def update_study(
-    study_id: str, study_data: StudyUpdateDTO, db: Session = Depends(get_db)
+    study_id: str,
+    study_data: StudyUpdateDTO,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ) -> Study:
     study = db.query(Study).filter(Study.id == study_id).first()
 
@@ -91,7 +102,11 @@ async def update_study(
 
 
 @router.delete("/{study_id}", status_code=status.HTTP_204_NO_CONTENT)  # type: ignore[misc]
-async def delete_study(study_id: str, db: Session = Depends(get_db)) -> None:
+async def delete_study(
+    study_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user),
+) -> None:
     study = db.query(Study).filter(Study.id == study_id).first()
 
     if study is None:

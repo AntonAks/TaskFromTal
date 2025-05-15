@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional, Literal
 from dtos.analysis import AnalysisResponseStudyByOrg, AnalysisResponseOrgByType
 from db.db import get_analysis_db
-from db.models import OrganizationStatistics, OrganizationTypeStatistics
+from db.models import OrganizationStatistics, OrganizationTypeStatistics, User
+from utils.security import get_current_active_user
 
 router = APIRouter(
     prefix="/analysis",
@@ -21,6 +22,7 @@ async def get_studies_by_org(
         description="Sort order by quantity: 'asc' for ascending, 'desc' for descending",
     ),
     db: Session = Depends(get_analysis_db),
+    current_user: User = Depends(get_current_active_user),
 ) -> list[OrganizationStatistics]:
     query = db.query(OrganizationStatistics)
 
@@ -45,6 +47,7 @@ async def get_org_types(
     limit: int = 100,
     organization_type: Optional[str] = None,
     db: Session = Depends(get_analysis_db),
+    current_user: User = Depends(get_current_active_user),
 ) -> list[OrganizationTypeStatistics]:
     query = db.query(OrganizationTypeStatistics)
 

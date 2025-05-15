@@ -22,6 +22,11 @@ class Settings(BaseSettings):  # type: ignore[misc]
     analysis_db_password: str | None = config.get("ANALYSIS_POSTGRES_PASSWORD")
     analysis_db_name: str | None = config.get("ANALYSIS_POSTGRES_DB")
 
+    # JWT settings
+    secret_key: str = os.environ.get("SECRET_KEY", "your-secret-key-for-jwt")
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+
     MAIN_DATABASE_URL: str = (
         "sqlite:///test_db/test.db"
         if TESTING
