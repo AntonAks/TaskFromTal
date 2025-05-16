@@ -4,11 +4,18 @@ import logging
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, DateTime, Boolean
+from datetime import datetime, timedelta
 
 from api.main import app
 from api.db.db import Base, get_db
-from api.db.models import Study
+from api.db.models import Study, User
+from api.utils.security import (
+    get_password_hash,
+    create_access_token,
+    get_current_user,
+    oauth2_scheme,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -46,12 +53,26 @@ def override_get_db():
         db.close()
 
 
+# Function to override the JWT authentication dependency
+async def override_get_current_user():
+    user = User(
+        id="00000000-0000-0000-0000-000000000000",
+        username="testuser",
+        email="testuser@example.com",
+        hashed_password="hashed_password",
+        is_active=True,
+        is_admin=True,
+        created_at=datetime.now(),
+    )
+    return user
+
+
 # Function to check if tables exist
 def check_tables():
     inspector = inspect(test_engine)
     tables = inspector.get_table_names()
     logger.info(f"Tables in database: {tables}")
-    return "studies" in tables
+    return "studies" in tables and "users" in tables
 
 
 # Fixture to initialize the database before all tests
@@ -69,11 +90,22 @@ def setup_test_db():
             __tablename__ = "studies"
 
             id = Column(String, primary_key=True)
-            title = Column(String, nullable=False)
-            organization_name = Column(String, nullable=False)
-            organization_type = Column(String, nullable=False)
+            title = Column(String, nullable=True)
+            organization_name = Column(String, nullable=True)
+            organization_type = Column(String, nullable=True)
             created_at = Column(DateTime, nullable=False)
             updated_at = Column(DateTime, nullable=False)
+
+        class TempUser(TempBase):
+            __tablename__ = "users"
+
+            id = Column(String, primary_key=True)
+            username = Column(String, unique=True, index=True)
+            email = Column(String, unique=True, index=True)
+            hashed_password = Column(String)
+            is_active = Column(Boolean, default=True)
+            is_admin = Column(Boolean, default=False)
+            created_at = Column(DateTime, default=datetime.now)
 
         TempBase.metadata.create_all(bind=test_engine)
 
@@ -83,6 +115,28 @@ def setup_test_db():
             logger.info("Tables created with explicit definition.")
     else:
         logger.info("Tables created successfully.")
+
+    # Add a test user to the database
+    db = TestingSessionLocal()
+    try:
+        test_user = db.query(User).filter(User.username == "testuser").first()
+        if not test_user:
+            user = User(
+                id="00000000-0000-0000-0000-000000000000",
+                username="testuser",
+                email="testuser@example.com",
+                hashed_password=get_password_hash("password"),
+                is_active=True,
+                is_admin=True,
+                created_at=datetime.now(),
+            )
+            db.add(user)
+            db.commit()
+            logger.info("Test user created.")
+    except Exception as e:
+        logger.error(f"Error creating test user: {e}")
+    finally:
+        db.close()
 
     yield
 
@@ -108,15 +162,32 @@ def clean_tables():
         db.close()
 
 
+# Fixture to create an authenticated token
+@pytest.fixture
+def auth_token():
+    # Create an access token with a 30-minute expiry
+    access_token = create_access_token(
+        data={
+            "sub": "testuser",
+            "id": "00000000-0000-0000-0000-000000000000",
+            "is_admin": True,
+        },
+        expires_delta=timedelta(minutes=30),
+    )
+    return access_token
+
+
 # Fixture to override get_db dependency
 @pytest.fixture(scope="function")
 def app_with_test_db():
     # Save original dependencies
     original_dependencies = app.dependency_overrides.copy()
 
-    # Set up test DB
+    # Set up test DB and auth overrides
     logger.info("Setting test database dependency override...")
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    app.dependency_overrides[oauth2_scheme] = lambda: "test_token"
 
     yield app
 
@@ -126,9 +197,14 @@ def app_with_test_db():
 
 # Fixture for test client
 @pytest.fixture(scope="function")
-def client(app_with_test_db):
+def client(app_with_test_db, auth_token):
     logger.info("Creating test client...")
     with TestClient(app_with_test_db) as test_client:
+        # Add authorization header to all requests
+        test_client.headers = {
+            "Authorization": f"Bearer {auth_token}",
+            **test_client.headers,
+        }
         yield test_client
 
 
@@ -142,3 +218,17 @@ def db():
         yield db
     finally:
         db.close()
+
+
+# Fixture for test user
+@pytest.fixture
+def test_user():
+    return User(
+        id="00000000-0000-0000-0000-000000000000",
+        username="testuser",
+        email="testuser@example.com",
+        hashed_password=get_password_hash("password"),
+        is_active=True,
+        is_admin=True,
+        created_at=datetime.now(),
+    )

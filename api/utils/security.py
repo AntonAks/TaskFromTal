@@ -20,12 +20,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 # Function to create a password hash
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    return pwd_context.hash(password)  # type: ignore[no-any-return]
 
 
 # Function to verify password against its hash
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(plain_password, hashed_password)  # type: ignore[no-any-return]
 
 
 # Function to create a JWT token
@@ -47,7 +47,7 @@ def create_access_token(
     encoded_jwt = jwt.encode(
         to_encode, settings.secret_key, algorithm=settings.algorithm
     )
-    return encoded_jwt
+    return encoded_jwt  # type: ignore[no-any-return]
 
 
 # Function to get the current user from token
